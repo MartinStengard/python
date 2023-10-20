@@ -9,5 +9,5 @@ def brute(url):
 
 
 if __name__ == '__main__':
-    result = brute("http://testphp.vulnweb.com")
+    result = brute("<complete-url-to-domain>")
     print(result)
