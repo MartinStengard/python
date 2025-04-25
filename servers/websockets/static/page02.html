@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    #chat { border-top: 1px solid #ccc; margin-top: 1rem; max-height: 300px; overflow-y: auto; }
+    .msg { margin: 0.3rem 0; }
+    .time { color: gray; font-size: 0.8rem; margin-left: 5px; }
+    #users { margin-top: 1rem; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Chat Room</h1>
+  <p>
+    Room: <input type="text" id="room" value="main" />
+    Name: <input type="text" id="username" />
+    <button onclick="connect()">Join</button>
+  </p>
+  <input type="text" id="input" placeholder="Type a message..." />
+  <button onclick="sendMessage()">Send</button>
+  <button onclick="clearChat()">🧹 Clear</button>
+  <div id="users"><strong>Online:</strong> <span id="userlist"></span></div>
+  <div id="chat"></div>
+
+  <script>
+    let socket;
+    let username;
+    let room;
+
+    function connect() {
+      username = document.getElementById('username').value || "Anonymous";
+      room = document.getElementById('room').value || "main";
+      socket = new WebSocket(`ws://${location.hostname}:3000/?name=${username}&room=${room}`);
+
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "history") {
+          data.messages.forEach(displayMessage);
+        } else if (data.type === "message") {
+          displayMessage(data);
+        } else if (data.type === "clear") {
+          document.getElementById('chat').innerHTML = '';
+        } else if (data.type === "users") {
+          document.getElementById('userlist').textContent = data.users.join(", ");
+        }
+      };
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('input');
+      if (input.value.trim()) {
+        socket.send(JSON.stringify({ text: input.value }));
+        displayMessage({
+          user: username,
+          text: input.value,
+          time: new Date().toLocaleTimeString(),
+          type: "message"
+        });
+        input.value = '';
+      }
+    }
+
+    function displayMessage(msg) {
+      const chat = document.getElementById('chat');
+      const p = document.createElement('p');
+      p.className = 'msg';
+      const safe = msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                           .replace(/:\)/g, "😊").replace(/:D/g, "😄");
+      p.innerHTML = `<strong>${msg.user}</strong>: ${safe} <span class="time">${msg.time}</span>`;
+      chat.appendChild(p);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function clearChat() {
+      socket.send(JSON.stringify({ text: "/clear" }));
+    }
+  </script>
+</body>
+</html>

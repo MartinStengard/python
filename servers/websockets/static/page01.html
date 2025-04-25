@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebSocket Chat</title>
+  <style>
+    body { font-family: sans-serif; padding: 1em; }
+    #chat { border: 1px solid #ccc; padding: 1em; height: 300px; overflow-y: scroll; margin-bottom: 1em; }
+    .message { margin-bottom: 0.5em; }
+    .time { color: gray; font-size: 0.8em; }
+    #users { font-size: 0.9em; color: #555; margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+
+<h1>Chat Room</h1>
+
+<div id="users">Users online:</div>
+<div id="chat"></div>
+
+<form id="msgForm">
+  <input id="msgInput" type="text" placeholder="Type a message..." autocomplete="off" />
+  <button type="submit">Send</button>
+</form>
+
+<script>
+  const username = prompt("Enter your username") || "Anonymous";
+  const room = prompt("Enter room name") || "main";
+  const ws = new WebSocket(`ws://${location.hostname}:3000/?name=${encodeURIComponent(username)}&room=${encodeURIComponent(room)}`);
+
+  const chat = document.getElementById("chat");
+  const form = document.getElementById("msgForm");
+  const input = document.getElementById("msgInput");
+  const usersDiv = document.getElementById("users");
+
+  const addMessage = (msg) => {
+    const div = document.createElement("div");
+    div.className = "message";
+    div.innerHTML = `<span class="time">[${msg.time}]</span> <strong>${msg.user}:</strong> ${msg.text}`;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  };
+
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.type === "message") {
+      addMessage(data);
+    } else if (data.type === "history") {
+      data.messages.forEach(addMessage);
+    } else if (data.type === "clear") {
+      chat.innerHTML = "";
+    } else if (data.type === "users") {
+      usersDiv.textContent = "Users online: " + data.users.join(", ");
+    }
+  };
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    if (input.value) {
+      ws.send(JSON.stringify({ text: input.value }));
+      input.value = "";
+    }
+  };
+</script>
+
+</body>
+</html>

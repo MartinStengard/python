@@ -13,7 +13,10 @@ for domain, domain_item in json_file.items():
         extras.append("server: " + domain_item.get('server'))
     if str(domain_item.get('code')) != "":
         extras.append("code: " + str(domain_item.get('code')))
-    all_domains.append(domain + " - " + ", ".join(extras))
+
+    extras_join = ", ".join(extras)
+    extras_join = " - " + extras_join if extras_join != "" else ""
+    all_domains.append(domain + extras_join)
 
 all_domains.sort()
 
