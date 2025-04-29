@@ -1,0 +1,118 @@
+{
+  "192.165.83.160": {
+    "ports": [
+      {
+        "protocol": "tcp",
+        "portid": "80",
+        "service": {
+          "name": "http"
+        }
+      },
+      {
+        "protocol": "tcp",
+        "portid": "443",
+        "service": {
+          "name": "https",
+          "tunnel": "ssl"
+        }
+      }
+    ],
+    "hostname": [
+      "www.fortnox.se","www.fortnox.se"
+    ]
+  },
+  "flags": [
+    {
+      "hostname": [
+        "www.fortnox.se"
+      ],
+      "ip": "192.165.83.160",
+      "port": "80",
+      "items": {
+        "nmap_vulners": [
+          {
+            "name": "https-redirect",
+            "data": {}
+          }
+        ],
+        "security_headers": [
+          {
+            "name": "x-frame-options",
+            "missing": true,
+            "message": "missing"
+          },
+          {
+            "name": "strict-transport-security",
+            "missing": true,
+            "message": "missing"
+          },
+          {
+            "name": "content-security-policy",
+            "missing": true,
+            "message": "missing"
+          },
+          {
+            "name": "x-content-type-options",
+            "missing": true,
+            "message": "missing"
+          },
+          {
+            "name": "referrer-policy",
+            "missing": true,
+            "message": "missing"
+          },
+          {
+            "name": "permissions-policy",
+            "missing": true,
+            "message": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "hostname": [
+        "www.fortnox.se"
+      ],
+      "ip": "192.165.83.160",
+      "port": "443",
+      "items": {
+        "nmap_vulners": [],
+        "security_headers": [
+          {
+            "name": "content-security-policy",
+            "missing": false,
+            "message": "Too long to show (1642 characters)",
+            "notes": [
+              "No directive default-src nor default-src defined in the Content Security Policy",
+              "No directive script-src nor default-src defined in the Content Security Policy",
+              "No directive form-action nor default-src defined in the Content Security Policy",
+              "No directive object-src nor default-src defined in the Content Security Policy"
+            ]
+          },
+          {
+            "name": "permissions-policy",
+            "missing": false,
+            "message": "camera=(), microphone=()",
+            "notes": [
+              "Privacy-sensitive feature 'geolocation' is not restricted to specific origins.",
+              "Privacy-sensitive feature 'microphone' is not restricted to specific origins.",
+              "Privacy-sensitive feature 'payment' is not restricted to specific origins."
+            ]
+          }
+        ],
+        "cookie_flags": [
+          {
+            "cookie_1": "Missing Secure"
+          },{
+            "cookie_3": "Missing HttpOnly"
+          }
+        ],
+        "cors": [
+          {
+          "misconfiguration_1": "descriptive text"
+          }
+        ]
+      }
+    }
+  ]
+}
